@@ -66,20 +66,8 @@ jobs:
 
       - name: 🔍 YAML syntax check
         run: |
-          echo "=== 检查所有 .yaml ==="
-          python -c "
-          import yaml, glob, sys
-          ok = True
-          for f in glob.glob('**/*.yaml', recursive=True) + glob.glob('**/*.yml', recursive=True):
-              try:
-                  with open(f) as fp:
-                      yaml.safe_load(fp)
-                  print(f'  ✅ {f}')
-              except yaml.YAMLError as e:
-                  print(f'  ❌ {f}: {e}')
-                  ok = False
-          sys.exit(0 if ok else 1)
-          "
+          echo "=== 检查所有 git tracked .yaml/.yml ==="
+          python .github/scripts/check_yaml.py
 
       - name: 🔍 JSON syntax check
         run: |
