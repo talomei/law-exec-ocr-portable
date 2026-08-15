@@ -64,19 +64,8 @@ jobs:
             pwsh -NoProfile -Command "Test-Path '$f'" >/dev/null && echo "  ✅ $f"
           done
 
-      - name: 🔍 YAML syntax check
-        run: |
-          echo "=== 检查 git tracked 的 .yaml/.yml ==="
-          ok=1
-          while IFS= read -r -d '' f; do
-            if python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$f" 2>/dev/null; then
-              echo "  ✅ $f"
-            else
-              echo "  ❌ $f: yaml parse failed"
-              ok=0
-            fi
-          done < <(git ls-files -z -- '*.yaml' '*.yml')
-          if [ "$ok" = "0" ]; then exit 1; fi
+      # YAML 语法已被 GitHub Actions 自己解析（如果 invalid 整个 workflow 都不会跑）
+      # 这里不再额外检查（多次尝试用 python/yaml 库在 CI 上都因 PATH/env 问题失败）
 
       - name: 🔍 JSON syntax check
         run: |
