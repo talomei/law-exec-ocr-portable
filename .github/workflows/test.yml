@@ -86,6 +86,6 @@ jobs:
         if: always()
         run: |
           echo "=== 总结 ==="
-          echo "✅ Python / Bash / PowerShell / YAML / JSON 语法全部通过"
+          echo "✅ Python / Bash / PowerShell / JSON 语法全部通过（YAML 由 GitHub Actions 自动校验）"
           echo "✅ RapidOCR 引擎能正常导入并调用"
           echo "✅ ocr_app.process_image 修复后无 unpack bug"
