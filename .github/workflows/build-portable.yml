@@ -83,7 +83,7 @@ jobs:
             artifact: LawExec-OCR-linux-x64
             script_sh: build/build_linux.sh
             needs_sign: false
-            sign_artifact: ''
+            sign_artifact: '_platform/linux-x64/LawExec-OCR'
             sign_artifact_dir: '_platform/linux-x64'
 
     steps:
