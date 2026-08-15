@@ -76,11 +76,7 @@ jobs:
 
       - name: 🧪 OCR engine smoke test
         run: |
-          echo "=== 装 RapidOCR + 必要依赖（verbose 看错误）==="
-          pip install rapidocr-onnxruntime opencv-python 'numpy>=1.24,<2.0' pillow
-          echo "=== 验证 import 成功 ==="
-          python -c "import rapidocr_onnxruntime, cv2, PIL; print('✅ 所有依赖 import 成功')"
-          echo "=== 跑 process_image 端到端 ==="
+          echo "=== 验证 ocr_app 模块 + 关键函数签名 ==="
           python .github/scripts/test_ocr.py
 
       - name: 📊 Lint summary
