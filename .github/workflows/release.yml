@@ -1,0 +1,109 @@
+name: Release
+
+# ============================================
+#  触发：tag 推送 (v*)
+#  行为：等 build-portable.yml 跑完 → 拉所有平台的 zip → 发 GitHub Release
+# ============================================
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+  actions: read
+
+# 防止多个 tag 同时触发时冲突
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: 📦 Create GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: []    # 不依赖 build job（build job 由 build-portable.yml 处理）
+
+    steps:
+      # ---- 1. 拉 build 产出的所有平台 zip ----
+      - name: 📥 Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          pattern: LawExec-OCR-*
+          merge-multiple: false
+
+      - name: 📋 List artifacts
+        run: |
+          echo "=== 下载到的产物 ==="
+          ls -lh dist/
+          echo ""
+          echo "=== 计算总大小 ==="
+          du -sh dist/
+
+      # ---- 2. 生成 SHA256 校验文件 ----
+      - name: 🔐 Generate SHA256 checksums
+        run: |
+          cd dist
+          sha256sum *.zip > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          gpg --batch --yes --armor --detach-sign \
+              --output SHA256SUMS.txt.sig SHA256SUMS.txt 2>/dev/null || \
+              echo "⚠️  GPG 签名跳过（如未配 GPG 私钥）"
+
+      # ---- 3. 创建 Release ----
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}    # 包含 - 视为预发布
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: |
+            dist/**/*.zip
+            dist/SHA256SUMS.txt
+            dist/SHA256SUMS.txt.sig
+          body: |
+            ## ⚖️ LawExec OCR v${{ github.ref_name }} - 便携版
+
+            ### 📥 下载对应你系统的版本
+
+            | 平台 | 文件 | 大小 |
+            |------|------|------|
+            | 🪟 Windows 11 x64 | `LawExec-OCR-windows-x64.zip` | 见 Assets |
+            | 🍎 macOS M1+ (ARM64) | `LawExec-OCR-macos-arm64.zip` | 见 Assets |
+            | 🍎 macOS Intel (x64) | `LawExec-OCR-macos-x64.zip` | 见 Assets |
+            | 🐧 Linux x64 | `LawExec-OCR-linux-x64.zip` | 见 Assets |
+
+            ### 🔐 校验完整性
+
+            ```bash
+            # 下载 SHA256SUMS.txt 校验
+            sha256sum -c SHA256SUMS.txt
+            ```
+
+            ### 🚀 使用方法
+
+            - **Windows**: 解压 → 双击 `start.bat`
+            - **macOS**: 解压 → 首次双击 `_INSTALL_FIRST_TIME.command` → 双击 `start.command`
+            - **Linux**: 解压 → 终端运行 `./start.sh`
+
+            ### 📚 完整文档
+
+            - [使用指南](_docs/USER_GUIDE.md)
+            - [便携化调研](_docs/PORTABLE_USB_TOOL_RESEARCH.md)
+            - [迁移评估](_docs/MIGRATION_ASSESSMENT.md)
+
+            ---
+
+            **⚠️ macOS / Windows 签名状态**：如 Release 说明带 "Signed" 标签，说明经过 Apple 公证 / Windows EV 签名，可直接双击运行；否则首次需用户授权。
+
+      # ---- 4. 通知完成 ----
+      - name: ✅ Release complete
+        if: success()
+        run: |
+          echo "🎉 Release ${{ github.ref_name }} 已发布"
+          echo "   访问：${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}"

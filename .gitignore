@@ -1,0 +1,56 @@
+# ============================================
+#  LawExec OCR Portable - .gitignore
+# ============================================
+
+# ---- 构建产物（每个平台重新构建，体积大不入库）----
+_platform/*/LawExec-OCR
+_platform/*/LawExec-OCR.exe
+_platform/*/_internal/
+_platform/*/*.dylib
+_platform/*/*.so
+build/.build_*/
+build/.build_*/dist/
+*.spec
+*.spec.bak
+
+# ---- Python 缓存 ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+pip-wheel-metadata/
+
+# ---- 虚拟环境 ----
+venv/
+.venv/
+my_venv/
+date_venv/
+.env/
+
+# ---- 临时文件 ----
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+~$*
+
+# ---- 测试产物 ----
+_test_samples/*.pdf
+_test_samples/*.PDF
+_test_samples/*.ofd
+_test_samples/*.jpg
+_test_samples/*.png
+
+# ---- 运行时日志 ----
+_logs/*.log
+*.log.*
+
+# ---- IDE ----
+.vscode/
+.idea/
+*.swp
+*~
+.project
+.pydevproject

@@ -1,0 +1,18 @@
+# 法律文书 OCR 预设参数
+# 适用：法院裁判文书、合同、起诉状、答辩状、执行裁定等
+
+preprocess:
+  correct_skew: true            # 自动纠偏（扫描件必开）
+  remove_stamp: true            # 去红色印章（法院文书几乎都有）
+  enhance_contrast: true        # 对比度增强
+  sharpen_text: true            # 文字锐化（小字体辨识）
+  denoise: true                 # 降噪（扫描件必备）
+  morph_clean: false            # 形态学清理（实验性）
+  remove_table_lines: false     # 不去表格线（法律文书很多表格内容重要）
+  dpi: 250                      # 法律文书推荐 250 DPI
+
+ocr:
+  confidence_threshold: 0.45    # 略低阈值，宁可多识别也不漏
+  lang: ch
+
+# 使用方法：通过环境变量 LAWEXEC_PRESET=legal_doc 加载（开发中）

@@ -1,0 +1,22 @@
+# LawExec OCR Portable - 精简依赖（仅 OCR + Web）
+# 与主项目 LawExec-OCR/requirements.txt 的区别：
+#   - 去除 paddlepaddle / paddleocr（用 rapidocr 替代）
+#   - 去除 paddlex
+#   - 保留 streamlit + opencv + PyMuPDF + Pillow + numpy
+# 总大小：约 320 MB（含 ONNX 模型后约 340 MB）
+
+# 核心 OCR
+rapidocr-onnxruntime>=1.4.0
+onnxruntime>=1.16.0
+
+# Web 框架
+streamlit>=1.30.0,<1.40.0   # 与 PyInstaller 兼容性最佳的版本
+
+# 图像处理
+opencv-python>=4.8.0
+Pillow>=10.0.0
+numpy>=1.24.0,<2.0.0        # 锁定 <2.0 避免 onnxruntime 兼容问题
+PyMuPDF>=1.23.0
+
+# 文本相似度（去重）
+python-Levenshtein>=0.23.0

@@ -1,0 +1,49 @@
+# LawExec OCR Portable - 主配置
+# 由 _app/ocr_app.py 加载（当前版本以代码内默认值为准；本文件为预留配置扩展位）
+
+app:
+  name: "LawExec OCR"
+  version: "3.0.0-portable"
+  edition: "Portable (RapidOCR + ONNX)"
+
+ocr:
+  engine: "rapidocr_onnxruntime"
+  lang: "ch"
+  use_angle_cls: true
+  default_confidence_threshold: 0.5
+  default_dpi: 200
+
+preprocess:
+  default_enabled:
+    - correct_skew
+    - remove_stamp
+    - enhance_contrast
+  optional:
+    - sharpen_text
+    - denoise
+    - morph_clean
+    - remove_table_lines
+
+server:
+  port: 8501
+  host: "127.0.0.1"
+  headless: true
+  max_upload_size_mb: 100
+
+formats:
+  input:
+    - pdf
+    - ofd
+    - odt
+    - ods
+    - odp
+    - png
+    - jpg
+    - jpeg
+    - tiff
+    - bmp
+    - gif
+    - zip
+  output:
+    - txt
+    - json
