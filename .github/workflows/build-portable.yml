@@ -55,6 +55,7 @@ jobs:
             script_ps: build/build_windows.ps1
             needs_sign: ${{ github.event_name == 'workflow_dispatch' && inputs.sign || startsWith(github.ref, 'refs/tags/v') }}
             sign_artifact: '_platform/windows-x64/LawExec-OCR.exe'
+            sign_artifact_dir: '_platform/windows-x64'
           # ---- macOS ARM64 (M1+) ----
           - os: macos-latest
             label: macos-arm64
@@ -63,6 +64,7 @@ jobs:
             script_sh: build/build_macos.sh
             needs_sign: ${{ github.event_name == 'workflow_dispatch' && inputs.sign || startsWith(github.ref, 'refs/tags/v') }}
             sign_artifact: '_platform/macos-arm64/LawExec-OCR'
+            sign_artifact_dir: '_platform/macos-arm64'
             notarize: true
           # ---- macOS Intel x64 ----
           - os: macos-13
@@ -72,6 +74,7 @@ jobs:
             script_sh: build/build_macos.sh
             needs_sign: ${{ github.event_name == 'workflow_dispatch' && inputs.sign || startsWith(github.ref, 'refs/tags/v') }}
             sign_artifact: '_platform/macos-x64/LawExec-OCR'
+            sign_artifact_dir: '_platform/macos-x64'
             notarize: true
           # ---- Linux x64 ----
           - os: ubuntu-latest
@@ -81,6 +84,7 @@ jobs:
             script_sh: build/build_linux.sh
             needs_sign: false
             sign_artifact: ''
+            sign_artifact_dir: '_platform/linux-x64'
 
     steps:
       # ---- 1. 检出代码 ----
@@ -131,7 +135,7 @@ jobs:
           else
             test -f "${{ matrix.sign_artifact }}" || (echo "❌ 二进制缺失" && exit 1)
             file ${{ matrix.sign_artifact }} || true
-            du -sh ${{ matrix.sign_artifact%/*}/
+            du -sh ${{ matrix.sign_artifact_dir }}/
           fi
 
       # ---- 6. macOS 代码签名 + 公证 ----
@@ -192,7 +196,7 @@ jobs:
           APP_DIR="$RUNNER_TEMP/$APP_NAME"
           mkdir -p "$APP_DIR/Contents/MacOS"
           mkdir -p "$APP_DIR/Contents/Resources"
-          cp -R ${{ matrix.sign_artifact%/*}/_internal "$APP_DIR/Contents/Resources/"
+          cp -R ${{ matrix.sign_artifact_dir }}/_internal "$APP_DIR/Contents/Resources/"
           cp ${{ matrix.sign_artifact}} "$APP_DIR/Contents/MacOS/LawExec-OCR"
 
           cat > "$APP_DIR/Contents/Info.plist" <<EOF
@@ -235,9 +239,9 @@ jobs:
           xcrun stapler validate "$APP_DIR"
 
           # 10. 用签好公证的 .app 替换原产物
-          rm -rf ${{ matrix.sign_artifact%/*}}
-          mkdir -p ${{ matrix.sign_artifact%/*}}
-          cp -R "$APP_DIR" ${{ matrix.sign_artifact%/*}}/
+          rm -rf ${{ matrix.sign_artifact_dir }}
+          mkdir -p ${{ matrix.sign_artifact_dir }}
+          cp -R "$APP_DIR" ${{ matrix.sign_artifact_dir }}/
           echo "✅ macOS 签名 + 公证完成"
 
       # ---- 7. Windows 代码签名 ----
