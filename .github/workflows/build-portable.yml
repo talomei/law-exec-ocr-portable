@@ -67,16 +67,16 @@ jobs:
             sign_artifact: '_platform/macos-arm64/LawExec-OCR'
             sign_artifact_dir: '_platform/macos-arm64'
             notarize: true
-          # ---- macOS Intel x64 ----
-          - os: macos-13
-            label: macos-x64
-            arch: x64
-            artifact: LawExec-OCR-macos-x64
-            script_sh: build/build_macos.sh
-            needs_sign: ${{ github.event_name == 'workflow_dispatch' && inputs.sign }}
-            sign_artifact: '_platform/macos-x64/LawExec-OCR'
-            sign_artifact_dir: '_platform/macos-x64'
-            notarize: true
+          # ---- macOS Intel x64 ----（已弃用：GitHub macos-13 runner 稀缺且 Apple 已弃维护 x86 Mac）
+          # - os: macos-13
+          #   label: macos-x64
+          #   arch: x64
+          #   artifact: LawExec-OCR-macos-x64
+          #   script_sh: build/build_macos.sh
+          #   needs_sign: ${{ github.event_name == 'workflow_dispatch' && inputs.sign }}
+          #   sign_artifact: '_platform/macos-x64/LawExec-OCR'
+          #   sign_artifact_dir: '_platform/macos-x64'
+          #   notarize: true
           # ---- Linux x64 ----
           - os: ubuntu-latest
             label: linux-x64
@@ -406,7 +406,6 @@ jobs:
             |------|------|------|
             | 🪟 Windows 11 x64 | `LawExec-OCR-windows-x64.zip` | 见 Assets |
             | 🍎 macOS M1+ (ARM64) | `LawExec-OCR-macos-arm64.zip` | 见 Assets |
-            | 🍎 macOS Intel (x64) | `LawExec-OCR-macos-x64.zip` | 见 Assets |
             | 🐧 Linux x64 | `LawExec-OCR-linux-x64.zip` | 见 Assets |
 
             ### 🔐 校验完整性
